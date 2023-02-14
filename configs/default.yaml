@@ -10,7 +10,7 @@ save_paths:
 
 data_paths:
 
-berens:
+dset:
   train_csv: 'kaggle_gradable_train_new_qual_eval.csv'
   val_csv: 'kaggle_gradable_val_new_qual_eval.csv'
   test_csv: 'kaggle_gradable_test_new_qual_eval.csv'
@@ -30,7 +30,7 @@ data:
   #std: [0.29319170117378235, 0.20009475946426392, 0.1545303463935852] # 224
   sampling_strategy: instance_balanced # instance_balanced / class_balanced / progressively_balanced. ref: https://arxiv.org/abs/1910.09217
   sampling_weights_decay_rate: 0.9 # if sampling_strategy is progressively_balanced, sampling weight will change from class_balanced to instance_balanced
-  augmentation: 'baseline' #['baseline', 'murat']
+  augmentation: 'baseline' #['baseline', 'other']
   data_augmentation: # available operations are list in 'data_augmentation_args' below
     - random_crop
     - horizontal_flip

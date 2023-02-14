@@ -93,14 +93,14 @@ def simple_transform(input_size):
         transforms.ToTensor()
     ])
 
-def berens_transform(cfg):
+def our_transform(cfg):
 
     transform_test = transforms.Compose([transforms.ToPILImage(), # test
 					     transforms.Resize(cfg.data.input_size),
 					     transforms.ToTensor(),
 					    ])
 
-    if cfg.data.augmentation.lower() == 'murat':
+    if cfg.data.augmentation.lower() == 'other':
         transform_train = transforms.Compose([transforms.ToPILImage(),
 						      transforms.Resize(cfg.data.input_size),
 						      transforms.RandomApply([

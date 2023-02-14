@@ -49,22 +49,12 @@ class Estimator():
             y_pred_proba = y_pred_proba.numpy()
             y_onset_target = y_onset_target.numpy()
 
-            #print('y preddddd  shape: ', y_pred.shape)
-            #print('y preddddd \n', y_pred)
-
-            #print('y_onset_target shape: ', y_onset_target.shape)
-            #print('y_onset_target \n', y_onset_target)
-
             cm = confusion_matrix(y_onset_target, y_pred)
-            #print('CM: \n', cm)
             rec_score = round(recall_score(y_onset_target, y_pred), digits)  
-            #print('recall: ', rec_score)
             if (cm[0,1] + cm[1,1]) !=0:
                 prec_score = round(precision_score(y_onset_target, y_pred), digits)
             else:
                 prec_score = 0
-
-            #print('precision: ', prec_score)
 
             if (cm[0,0] + cm[0,1]) !=0:
                 specificity_score = round(cm[0,0]/(cm[0,0] + cm[0,1]), digits)
@@ -87,7 +77,6 @@ class Estimator():
             return 0, 0
 
     def update_val_loss(self, loss):
-        #print('val losss')
         self.val_loss.append(loss)
 
     def get_val_loss(self, digits=-1):
@@ -103,8 +92,6 @@ class Estimator():
     def get_kappa(self, digits=-1):
         kappa = quadratic_weighted_kappa(self.conf_mat)
         kappa = kappa if digits == -1 else round(kappa, digits)
-        #bin_kappa = quadratic_weighted_kappa(self.bin_conf_mat)
-        #bin_kappa = bin_kappa if digits == -1 else round(bin_kappa, digits)
         return kappa
 
     def reset(self):
@@ -161,7 +148,4 @@ def quadratic_weighted_kappa(conf_mat):
     observed = (conf_mat * weighted_matrix).sum()
     expected = (expected_matrix * weighted_matrix).sum()
 
-    #perform complex mathematical operation
-    #np.exp(logsumexp(-3*array1) - logsumexp(-3*array2))
     return (observed - expected) / (1 - expected)
-    #return  math.exp(math.log(observed - expected) - math.log(1 - expected))
