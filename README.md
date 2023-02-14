@@ -1,5 +1,5 @@
 # Sparse Activations for Interpretable Disease Grading
-This is the pytorch implementation used in the MIDL 2023 submission "Sparse Activations for Interpretable Disease Grading" [link](https://openreview.net).
+This is the pytorch implementation used in the MIDL 2023 submission [Sparse Activations for Interpretable Disease Grading](https://openreview.net).
 
 ![Model's architecture](images/models_architectures.png)
 
@@ -20,7 +20,7 @@ The images used for figures 2, 3, 4, 6 and 7 are provided in `./files/images`.
 ### Configurations
 All experiments are fully specified by the configuration file located at `./configs/default.yaml`. Please adjust paths to dataset in `configs/paths.yaml`.
 
-The folder containing the log file and the final weights of the model can be configured in the function `load_save_paths(params)` _(.utils/func.py)_
+The folder containing the log file and the final weights of the model can be configured in the function `./utils/func.py -> load_save_paths(params)`
 
 ### Run individual configurations
 
@@ -32,10 +32,11 @@ The folder containing the log file and the final weights of the model can be con
 ```$ tensorborad --logdir=/path/to/your/log --port=6006```
 
 ### Reproducibility
-- `Evaluations.ipynb` contains the paper's code for figures 2, 3, 4, 6, and 7.
+- `Evaluations.ipynb` contains the [paper's](https://openreview.net) code for figures 2, 3, 4, 6, and 7.
+- Annotation masks may be available upon request.
 
 ### Best models's weights
-The final models with the best validation weights used for the experiments are available
+The final models with the best validation weights used for the experiments (also in `Evaluations.ipynb`) are available
 - [Binary referable denseBagNet model](https://drive.google.com/file/d/1xW4w04LDoOxvmU8ziwTvdALQU9i6UROC/view?usp=share_link)
 - [Binary referable sparseBagNet model](https://drive.google.com/file/d/145h-2_HkA_S085OFTl1pN-8LI9ss-tET/view?usp=share_link)
 - [Binary referable ResNet model](https://drive.google.com/file/d/1sVbANGkb0Tzgqh_5JrnPlG9ioVQKgmlw/view?usp=share_link)
@@ -43,8 +44,14 @@ The final models with the best validation weights used for the experiments are a
 - [Multiclass sparseBagNet model](https://drive.google.com/file/d/1rUxN1lAiyBZgjmqtozvbRDEwllwApHVM/view?usp=share_link)
 - [Multiclass resnet model](https://drive.google.com/file/d/1_okXGC90rGAYSL2OXYdKUmq2ETX2TmA4/view?usp=share_link)
 
+## Acknowledge
+We greatly thanks the reviews of MIDL 2023 for improving this work.
+
 ## Citation
 If you use this code, please cite
+```
+  our
+```
 
 ```
 @article{huang2021identifying,
