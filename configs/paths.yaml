@@ -1,0 +1,5 @@
+# contains the paths to the dataset
+
+dset:
+  root: "/gpfs01/berens/data/data/DR/Kaggle_DR_resized"
+  dir_512: "kaggle_data_512"

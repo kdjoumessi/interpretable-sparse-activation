@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+munch = "==2.5.0"
+tensorboard = "==2.3.0"
+torch = "==1.7.1"
+torchvision = "==0.8.2"
+tqdm = "==4.50.2"
+pandas = "*"
+multi-level-split = {git = "https://github.com/lmkoch/multi-level-split"}
+PyYAML = "==5.4.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
