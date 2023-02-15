@@ -8,3 +8,9 @@ packaging==21.0
 pandas
 opencv-python
 git+https://github.com/lmkoch/multi-level-split#egg=multi-level-split
+git+https://github.com/wielandbrendel/bag-of-local-features-models.git
+grad-cam
+matplotlib
+seaborn
+tensorboard
+opencv-python
