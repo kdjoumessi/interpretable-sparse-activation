@@ -65,8 +65,8 @@ def load_save_paths(cfg):
         log_path = os.path.join(os.path.expanduser('~'), save_path_logger, timestamp_str)
     else:
         save_p = "./"
-        save_path = os.path.join(save_p, timestamp_str, save_path_model)   
-        log_path = os.path.join(save_p, timestamp_str, save_path_logger)
+        save_path = os.path.join(save_p, save_path_model, timestamp_str)   
+        log_path = os.path.join(save_p, save_path_logger, timestamp_str)
 
     paths = {
         'model': save_path, 
