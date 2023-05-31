@@ -18,7 +18,7 @@ def main():
     # load conf and paths files
     args = parse_config()
     cfg, cfg_paths = load_config(args)   
-    cfg.data_paths = data_path(cfg, cfg_paths)
+    #cfg.data_paths = data_path(cfg, cfg_paths)
 
     # Test
     if cfg.base.test:
