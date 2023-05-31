@@ -7,8 +7,9 @@ from torchvision import datasets
 from .loader import pil_loader
 from .transforms import data_transforms, simple_transform, our_transform
 from .dataset import DatasetFromDict, CustomizedImageFolder, KaggleDataset, EyepacsDataset
+from .moorfields import MoorfieldsDataset
 from utils.func import mean_and_std, print_dataset_info
-from .our_dataset import FundusDataset, FundusDataset_1024
+from .our_dataset import FundusDataset#, FundusDataset_1024
 
 
 def generate_dataset(cfg):
@@ -41,6 +42,11 @@ def generate_dataset(cfg):
     elif cfg.base.dataset == 'eyepacs':
         datasets = generate_dataset_eyepacs(
             cfg.base.data_path,
+            train_transform,
+            test_transform
+        )
+    elif cfg.base.dataset == 'moorfields':
+        datasets = generate_dataset_moorfields(
             train_transform,
             test_transform
         )
@@ -110,5 +116,13 @@ def generate_our_dataset_kaggle(cfg, train_transform, test_transform):
     dset_train = FundusDataset(cfg, transform=train_transform)
     dset_val = FundusDataset(cfg, train=False, transform=test_transform)
     dset_test = FundusDataset(cfg, train=False, test=True, transform=test_transform)
+
+    return dset_train, dset_test, dset_val
+
+def generate_dataset_moorfields(train_transform, test_transform):
+                
+    dset_train = MoorfieldsDataset(split='train', transform=train_transform)
+    dset_val = MoorfieldsDataset(split='val', transform=test_transform)
+    dset_test = MoorfieldsDataset(split='test', transform=test_transform)
 
     return dset_train, dset_test, dset_val
