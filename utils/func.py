@@ -51,28 +51,27 @@ def parse_config():
     return args
 
 def load_save_paths(cfg):
-    # @kerol: default paths
     timestamp_str = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
     # save path
     if cfg.base.test:
-        save_path_model = 'Outputs/DR-baseline/tmp_model'
-        save_path_logger = 'Outputs/DR-baseline/tmp_log'
+        save_path_model = 'outputs/tmp_model'
+        save_path_logger = 'outputs/tmp_log'
     else:
-        save_path_model = 'Outputs/DR-baseline/model/new'
-        save_path_logger = 'Outputs/DR-baseline/logger/new'
+        save_path_model = 'outputs/model'
+        save_path_logger = 'outputs/logger'
 
     if socket.gethostname() in CIN_hostname:         
         save_path = os.path.join(os.path.expanduser('~'), save_path_model, timestamp_str)   
         log_path = os.path.join(os.path.expanduser('~'), save_path_logger, timestamp_str)
     else:
-        save_p = '/mnt/qb/work/berens/kdjoumessi56'
-        save_path = os.path.join(save_p, save_path_model, timestamp_str)   
-        log_path = os.path.join(save_p, save_path_logger, timestamp_str)
+        save_p = "./"
+        save_path = os.path.join(save_p, timestamp_str, save_path_model)   
+        log_path = os.path.join(save_p, timestamp_str, save_path_logger)
 
     paths = {
-            'model': save_path, 
-            'logger': log_path
-            }
+        'model': save_path, 
+        'logger': log_path
+    }
     return munchify(paths)
 
 def data_path(cfg, cfg_path):
