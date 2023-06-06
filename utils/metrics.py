@@ -1,8 +1,8 @@
 import torch
 import numpy as np
 #from scipy.special import logsumexp
-
-from sklearn.metrics import roc_curve, auc, precision_recall_curve, recall_score, precision_score, confusion_matrix
+import torch.nn.functional as F
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, recall_score, precision_score, confusion_matrix, cohen_kappa_score
 
 class Estimator():
     def __init__(self, cfg, thresholds=None):
@@ -15,8 +15,17 @@ class Estimator():
         self.reset()  # intitialization
 
     def update(self, predictions, targets):
+
+        yprob = F.softmax(predictions, dim=-1)
+        yhat = torch.argmax(yprob, dim=1)
+
+        #print(f'yhat shape: {yhat.shape}, self.yhat shape: {self.yhat.shape}')
+        self.yhat = np.concatenate([self.yhat, yhat.detach().cpu().numpy()])
+        self.y_trues = np.concatenate([self.y_trues, targets.detach().cpu().numpy()])
+
         targets = targets.data.cpu()
-        bin_targets = (targets >= self.cfg.data.threshold).long()
+        if self.cfg.data.threshold:
+            bin_targets = (targets >= self.cfg.data.threshold).long()
 
         predictions = predictions.data.cpu()
         if self.cfg.data.binary:
@@ -24,20 +33,22 @@ class Estimator():
             self.onset_target.append(targets.detach())
 
         predictions = self.to_prediction(predictions)
-        bin_prediction = (predictions >= self.cfg.data.threshold).long()
+        if self.cfg.data.threshold:
+            bin_prediction = (predictions >= self.cfg.data.threshold).long()
 
         # update metrics
         self.num_samples += len(predictions)
         self.correct += (predictions == targets).sum().item()
-        self.bin_correct += (bin_prediction == bin_targets).sum().item()
+        if self.cfg.data.threshold:
+            self.bin_correct += (bin_prediction == bin_targets).sum().item()
         for i, p in enumerate(predictions):
             self.conf_mat[int(targets[i])][int(p.item())] += 1
         
-        for i, p in enumerate(bin_prediction):
-            self.bin_conf_mat[int(bin_targets[i])][int(p.item())] += 1
+        if self.cfg.data.threshold:
+            for i, p in enumerate(bin_prediction):
+                self.bin_conf_mat[int(bin_targets[i])][int(p.item())] += 1
 
-        #print('end')
-    
+        
     def get_auc_auprc(self, digits=-1):
         if self.cfg.data.binary:
             y_bin_pred = torch.cat(self.bin_prediction, dim=0) # x axis
@@ -50,31 +61,45 @@ class Estimator():
             y_onset_target = y_onset_target.numpy()
 
             cm = confusion_matrix(y_onset_target, y_pred)
-            rec_score = round(recall_score(y_onset_target, y_pred), digits)  
-            if (cm[0,1] + cm[1,1]) !=0:
-                prec_score = round(precision_score(y_onset_target, y_pred), digits)
-            else:
-                prec_score = 0
+            rec_score = round(recall_score(y_onset_target, y_pred), digits)
 
-            if (cm[0,0] + cm[0,1]) !=0:
-                specificity_score = round(cm[0,0]/(cm[0,0] + cm[0,1]), digits)
-            else:
-                specificity_score = 0
+            print('ttttttttttttttt', (len(cm), cm))
+            if len(cm)==1:
+                if y_onset_target[0]:
+                    rec_score = 1
+                    prec_score = 1
+                    specificity_score = 0
+                else:
+                    rec_score = 0
+                    prec_score = 0
+                    specificity_score = 1
 
-            fpr, tpr, thres = roc_curve(y_onset_target, y_pred_proba[:, 1]) # pos_label=1 -> when not 0 and 1
-            precision, recall, _ = precision_recall_curve(y_onset_target, y_pred_proba[:, 1])
-            
+                list_auc, list_auprc, list_others = [0,0,0], [0,0,0], [0,0,0,0]
+            else :  
+                if (cm[0,1] + cm[1,1]) !=0:
+                    prec_score = round(precision_score(y_onset_target, y_pred), digits)
+                else:
+                    prec_score = 0
 
-            bin_auc = auc(fpr, tpr)
-            au_prc = auc(recall, precision)
-            
-            list_auc = [round(bin_auc, digits), fpr, tpr]
-            list_auprc = [round(au_prc, digits), precision, recall]
-            list_others = [rec_score, prec_score, specificity_score, cm]
-            
+                if (cm[0,0] + cm[0,1]) !=0:
+                    specificity_score = round(cm[0,0]/(cm[0,0] + cm[0,1]), digits)
+                else:
+                    specificity_score = 0            
+
+                fpr, tpr, thres = roc_curve(y_onset_target, y_pred_proba[:, 1]) # pos_label=1 -> when not 0 and 1
+                precision, recall, _ = precision_recall_curve(y_onset_target, y_pred_proba[:, 1])
+                
+
+                bin_auc = auc(fpr, tpr)
+                au_prc = auc(recall, precision)
+                
+                list_auc = [round(bin_auc, digits), fpr, tpr]
+                list_auprc = [round(au_prc, digits), precision, recall]
+                list_others = [rec_score, prec_score, specificity_score, cm]
+                
             return list_auc, list_auprc, list_others
         else:
-            return 0, 0
+            return [0,0,0], [0,0], [0,0,0,0]
 
     def update_val_loss(self, loss):
         self.val_loss.append(loss)
@@ -94,6 +119,11 @@ class Estimator():
         kappa = kappa if digits == -1 else round(kappa, digits)
         return kappa
 
+    def get_kappa_v2(self, digits=-1):
+        kappa = cohen_kappa_score(self.y_trues, self.yhat, weights='quadratic')
+        kappa = kappa if digits == -1 else round(kappa, digits)
+        return kappa
+
     def reset(self):
         self.correct = 0
         self.bin_correct =0
@@ -103,6 +133,9 @@ class Estimator():
         self.bin_conf_mat = np.zeros((2, 2), dtype=int)
         self.bin_prediction = [] # for AUC, ROC, AUPRC
         self.onset_target = []   # for AUC, ROC, AUPRC
+
+        self.y_trues = np.zeros((0), np.int32)
+        self.yhat = np.zeros((0), np.int32)
 
     def to_prediction(self, predictions):
         if self.criterion in ['cross_entropy', 'focal_loss', 'kappa_loss']:

@@ -56,18 +56,19 @@ def load_save_paths(cfg):
     # save path
     if cfg.base.test:
         save_path_model = 'Outputs/DR-baseline/tmp_model'
-        save_path_logger = 'Outputs/DR-baseline/tmp_log'
+        save_path_logger = 'Outputs/DR-baseline/tmp_model' #'Outputs/DR-baseline/tmp_log'
     else:
         save_path_model = 'Outputs/DR-baseline/model/new'
-        save_path_logger = 'Outputs/DR-baseline/logger/new'
+        save_path_logger = 'Outputs/DR-baseline/model/new'
+        #save_path_logger = 'Outputs/DR-baseline/logger/new'
 
-    if socket.gethostname() in CIN_hostname:         
-        save_path = os.path.join(os.path.expanduser('~'), save_path_model, timestamp_str)   
-        log_path = os.path.join(os.path.expanduser('~'), save_path_logger, timestamp_str)
-    else:
-        save_p = '/mnt/qb/work/berens/kdjoumessi56'
-        save_path = os.path.join(save_p, save_path_model, timestamp_str)   
-        log_path = os.path.join(save_p, save_path_logger, timestamp_str)
+    #if socket.gethostname() in CIN_hostname:         
+    save_path = os.path.join(os.path.expanduser('~'), save_path_model, timestamp_str)   
+    log_path = os.path.join(os.path.expanduser('~'), save_path_logger, timestamp_str)
+    #else:
+        #save_p = '/mnt/qb/work/berens/kdjoumessi56'
+        #save_path = os.path.join(save_p, save_path_model, timestamp_str)   
+        #log_path = os.path.join(save_p, save_path_logger, timestamp_str)
 
     paths = {
             'model': save_path, 
@@ -77,19 +78,25 @@ def load_save_paths(cfg):
 
 def data_path(cfg, cfg_path):
     paths = {}
-    if cfg.base.dataset in ['kaggle_224', 'kaggle_512']: 
-        paths['dset_dir'] = cfg_path.dset.dset_dir_224 if cfg.base.dataset == 'kaggle_224' else cfg_path.dset.dset_dir_512
-        if socket.gethostname() in ['kerol', 'rouss']:
-            paths['root'] = cfg_path.dset.root_LOCAL
-        elif socket.gethostname() in CIN_hostname: 
-            paths['root'] = cfg_path.dset.root_CIN
-        elif 'slurm' in socket.gethostname(): 
-            paths['root'] = cfg_path.dset.root_SLURM
-        else:
-            NotImplementedError('Not implemented User Session')            
+    if cfg.base.dataset in ['kaggle']: 
+        print('kaggle dataset')
+        name = 'kaggle_dset'
+    elif cfg.base.dataset in ['eyepacs']:
+        print('EyePACS dataset')
+        name = 'eyepacs_dset'
     else:
-        raise ValueError('Not implemented dataset.')
+        NotImplementedError('Not implemented Dataset')
 
+    paths['root'] = cfg_path[name].root
+    paths['dset_dir'] = cfg_path[name].img_dir
+    paths['val_csv'] = cfg_path[name].val_csv
+    paths['test_csv'] = cfg_path[name].test_csv
+    paths['train_csv'] = cfg_path[name].train_csv
+    paths['mean'] = cfg_path[name].mean
+    paths['std'] = cfg_path[name].std
+
+    #raise ValueError('Not implemented dataset.')
+    
     print('root dataset dir: ', paths['root'])
     print('dataset dir: ', paths['dset_dir'])
     return munchify(paths)

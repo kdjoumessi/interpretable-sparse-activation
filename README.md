@@ -1,7 +1,7 @@
 # Sparse Activations for Interpretable Disease Grading
 This is the pytorch implementation used in the MIDL 2023 submission [Sparse Activations for Interpretable Disease Grading](https://openreview.net).
 
-![Model's architecture](images/models_architectures.png)
+![Model's architecture](./files/models_architectures.png)
 
 ## Dependencies
 All packages required for running the code in the repository are listed in the file _requirements.txt_
@@ -10,9 +10,9 @@ All packages required for running the code in the repository are listed in the f
 The code in this repository uses publicly available Kaggle dataset for the [diabetic retinopathy detection challenge](https://www.kaggle.com/c/diabetic-retinopathy-detection/data)
 
 Each image was preprocessed by tightly cropping the circular mask of the retinal fundus and resize to 512 x 512. Then an ensemble of EfficientNets trained on the [ISBI2020 challenge dataset](https://isbi.deepdr.org/challenge2.html) was used to filter out images with low qualities. The resulting dataset used to train and evaluate the model are following: 
-- `./csv_files/kaggle_gradable_train.csv`
-- `./csv_files/kaggle_gradable_val.csv`
-- `./csv_files/kaggle_gradable_test.csv` 
+- [`training csv file`](./files/csv_files/kaggle_gradable_train.csv)
+- [`validation csv file`](./files/csv_files/kaggle_gradable_val.csv)
+- [`test csv file`](./files/csv_files/kaggle_gradable_test.csv) 
 
 The images used for figures 2, 3, 4, 6 and 7 are provided in `./files/images`.
 

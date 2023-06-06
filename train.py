@@ -51,7 +51,7 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
 
     max_indicator, max_bin_indicator, max_auc, max_sens, max_spe, max_pre = -1, -1, -1, -1, -1, -1
     min_loss_indicator = 10
-    kappa_indicator = -10
+    kappa_indicator = -100
     avg_loss, avg_val_loss, avg_acc, avg_kappa, avg_bin_acc = 0, 0, 0, 0, 0
     train_loss, train_acc, train_kappa, lr, train_bin_acc   = [], [], [], [],[]
     val_loss, val_acc, val_kappa, val_bin_acc = [], [], [], []
@@ -130,12 +130,13 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                 logger.add_image('input samples', samples, 0, dataformats='CHW')
 
             if cfg.data.binary:
+                list_auc, _, _ = estimator.get_auc_auprc(6)
                 progress.set_description(
-                    'epoch: [{} / {}], loss: {:.6f}, acc: {:.4f}'.format(epoch, cfg.train.epochs, avg_loss, avg_acc) )
+                    'epoch: [{} / {}], bash: {}/{}, loss: {:.6f}, acc: {:.4f}, auc: {:.4f}'.format(epoch, cfg.train.epochs, step, len(train_loader), avg_loss, avg_acc, list_auc[0]) )
             else:
                 progress.set_description(
-                    'epoch: [{} / {}], loss: {:.6f}, acc: {:.4f}, kappa: {:.4f}, bin_acc: {:.4f}'
-                    .format(epoch, cfg.train.epochs, avg_loss, avg_acc, avg_kappa, avg_bin_acc) )
+                    'epoch: [{} / {}], bash: {}/{}, loss: {:.6f}, acc: {:.4f}, kappa: {:.4f}, bin_acc: {:.4f}'
+                    .format(epoch, cfg.train.epochs, step, len(train_loader), avg_loss, avg_acc, avg_kappa, avg_bin_acc) )
         
         # Binary metrics: after a complete epoch
         if cfg.data.binary:
@@ -159,6 +160,7 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
             loss_ = estimator.get_val_loss(6)
             if not cfg.data.binary:
                 kappa = estimator.get_kappa(6)
+                #print('get kappaaaaaaaaaaaaaaaaaaaaaaaaaaaa', kappa)
             else:
                 list_auc, list_auprc, list_others = estimator.get_auc_auprc(6)
                 v_auc, val_fpr, val_tpr = list_auc
@@ -253,13 +255,14 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                     print('save the best model based on the best Precision. \n Epoch: {}, Precision. {} \n'.format(epoch, v_prec))
                     save_weights(model, os.path.join(save_path, 'best_validation_weights_prec.pt'))
                     max_pre = v_prec
-            else:
-                # save model                
+            else:      
+                #print('kapppppppppppppppppppppppppppp', kappa, kappa_indicator)        
                 if kappa > kappa_indicator:
                     print('save the best model based on Kappa. Epoch: {}, kappa. {}'.format(epoch, kappa))
                     save_weights(model, os.path.join(save_path, 'best_validation_weights_kappa.pt'))
                     kappa_indicator = kappa
                     print_msg('Best in validation set on the kappa. Model save at {}'.format(save_path))
+                    #print('save kapppppppppppppppppppppppppppp') 
 
         '''
         if epoch % cfg.train.save_interval == 0:

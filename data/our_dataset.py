@@ -8,10 +8,11 @@ import torch
 from PIL import Image
 
 class FundusDataset(Dataset):
-    def __init__(self, cfg, train=True, test=False, transform=None):
+    def __init__(self, cfg, dset='kaggle', train=True, test=False, transform=None):
         self.img_size = (cfg.data.input_size, cfg.data.input_size)
         self.aug = cfg.data.augmentation
         self.transform = transform
+        
         self.image_path = os.path.join(cfg.data_paths.root, cfg.data_paths.dset_dir)
         csv_path = cfg.data_paths.root
 
@@ -24,11 +25,11 @@ class FundusDataset(Dataset):
 
         if not test: 
             if train:
-                self.df = pd.read_csv(os.path.join(csv_path, cfg.dset.train_csv))
+                self.df = pd.read_csv(os.path.join(csv_path, cfg.data_paths.train_csv))
             else:
-                self.df = pd.read_csv(os.path.join(csv_path, cfg.dset.val_csv))
+                self.df = pd.read_csv(os.path.join(csv_path, cfg.data_paths.val_csv))
         else:
-            self.df = pd.read_csv(os.path.join(csv_path, cfg.dset.test_csv))
+            self.df = pd.read_csv(os.path.join(csv_path, cfg.data_paths.test_csv))
 
         self.filenames = self.df['filename']
         self.labels = self.df[self.str_label]

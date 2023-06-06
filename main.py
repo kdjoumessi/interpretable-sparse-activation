@@ -19,22 +19,22 @@ def main():
     args = parse_config()
     cfg, cfg_paths = load_config(args)   
     cfg.data_paths = data_path(cfg, cfg_paths)
-
+    
     # Test
     if cfg.base.test:
         print('########## test')
-        cfg.base.test = True
-        cfg.base.sample = 30
+        cfg.base.sample = 100
         cfg.train.epochs = 3
+        cfg.train.num_workers = 0
     
     #''' 
     # create folder
+    # properly set this
     cfg.save_paths = load_save_paths(cfg)
     save_path = cfg.save_paths.model 
     log_path = cfg.save_paths.logger
     print('save path ', save_path)
     print('logs path', log_path)
-    
     
     if os.path.exists(save_path):
         pass
@@ -72,8 +72,12 @@ def main():
     since = time.time()
     model = generate_model(cfg)
     train_dataset, test_dataset, val_dataset = generate_dataset(cfg)
-    estimator = Estimator(cfg)
     #exit()
+    estimator = Estimator(cfg)
+    #print('train dataset size: ', len(train_dataset))
+    #print('val dataset size: ', len(val_dataset))
+    #print('test dataset size: ', len(test_dataset))
+   
     #'''
     train(
         cfg=cfg,

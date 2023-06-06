@@ -1,19 +1,15 @@
 base:
-  dataset: 'kaggle_512' # in ['kaggle_1024', 'kaggle_224', 'kaggle_512']
+  dataset: 'kaggle' # in ['kaggle', 'eyepacs']
   data_index: null # alternative way to build dataset. check README for more details
   device: cuda 
   random_seed: 0 #819, 3407
-  test: True #True, False
-  sample: 0
+  test: False #True, False
   
 save_paths:
 
 data_paths:
 
-dset:
-  train_csv: 'kaggle_gradable_train_new_qual_eval.csv'
-  val_csv: 'kaggle_gradable_val_new_qual_eval.csv'
-  test_csv: 'kaggle_gradable_test_new_qual_eval.csv'
+dset:  
   data_index: null # alternative way to build dataset. check README for more details
   meta_csv: ['trainLabels.csv', 'test.csv']
   select_side: 'left' # in ['left', 'right', None]
@@ -22,12 +18,10 @@ data:
   num_classes: 2 # number of classes, default 100 [2, 5]
   binary: True # [True, False] True => n_classe = 2, False => n_classe = 5
   onset: onset2 # onset1 or onset2
-  threshold: 2 # 1 for onset1 and 2 for unset2. to derive the binary metrics: used in the metrics file
+  threshold: null # 1 for onset1 and 2 for unset2. to derive the binary metrics: used in the metrics file
   input_size: 512
-  mean: [0.41326871514320374, 0.2723627984523773, 0.18590997159481049] # 512
-  std: [0.29345420002937317, 0.20033970475196838, 0.15474912524223328] # 512
-  #mean: [0.4126319885253906, 0.2717236578464508, 0.18526685237884521] # 224
-  #std: [0.29319170117378235, 0.20009475946426392, 0.1545303463935852] # 224
+  mean: None
+  std: None
   sampling_strategy: instance_balanced # instance_balanced / class_balanced / progressively_balanced. ref: https://arxiv.org/abs/1910.09217
   sampling_weights_decay_rate: 0.9 # if sampling_strategy is progressively_balanced, sampling weight will change from class_balanced to instance_balanced
   augmentation: 'baseline' #['baseline', 'other']
@@ -40,15 +34,15 @@ data:
     - translation
 
 train:
-  network: bagnet33 # [bagnet33, resnet50 (=> v1)] available networks are list in networks.yaml 
+  network: resnet50 # [bagnet33, resnet50 (=> v1)] available networks are list in networks.yaml 
   version: v2  # v1 = bagnet without reg, v2 = with reg
-  sparsity: True  # [True, False]
+  sparsity: False  # [True, False]
   batch_reg_record: True   # just to monitor the regularization after every epoch
   pretrained: true # load weights from pre-trained model training on ImageNet
   checkpoint: null # load weights from other pretrained model
   epochs: 100
-  batch_size: 8
-  num_workers: 0 # 0, 2, 4 good = 2 number of cpus used to load data at each step
+  batch_size: 16
+  num_workers: 24 # 0, 2, 4 good = 2 number of cpus used to load data at each step
   criterion: cross_entropy # [cross_entropy, mean_square_error ] available criterions are list in 'criterion_args' below
   loss_weight: null # null / balance / dynamic / list with shape num_classes. Weights for loss function. Don't use it with weighted sampling!
   loss_weight_decay_rate: 0 # if loss_weights is dynamic, loss weight will decay from balance to equivalent weights
