@@ -6,14 +6,16 @@ import torchvision
 from PIL import Image
 
 class MoorfieldsDataset(torch.utils.data.Dataset):
-    def __init__(self, split: str="train", transform=None, target_transform=None):
+    def __init__(self, split: str="train", transform=None, target_transform=None, binary: bool=False):
         self.root_dir = "./dataset/"
         meta = pd.read_csv(os.path.join(self.root_dir, f"splits/{split}.csv"))
         self.images = meta.Image
-        self.labels = meta.Label
+        self.labels = meta.Label.to_numpy()
+        if binary:
+            self.labels = np.array([1 if label > 1 else 0 for label in self.labels])
         self.transform = transform
         self.target_transform = target_transform
-        self.classes = list(np.sort(np.unique(self.labels.to_numpy())))
+        self.classes = list(np.sort(np.unique(self.labels)))
         
     def __len__(self):
         return len(self.images)
