@@ -49,7 +49,7 @@ def generate_dataset(cfg):
         datasets = generate_dataset_moorfields(
             train_transform,
             test_transform,
-            binary=cfg.data.binary,
+            binary_type=cfg.data.binary_type,
         )
     else:
         raise ArgumentError(f'Dataset not implemented: {cfg.base.dataset}')
@@ -120,10 +120,10 @@ def generate_our_dataset_kaggle(cfg, train_transform, test_transform):
 
     return dset_train, dset_test, dset_val
 
-def generate_dataset_moorfields(train_transform, test_transform, binary):
+def generate_dataset_moorfields(train_transform, test_transform, binary_type):
                 
-    dset_train = MoorfieldsDataset(split='train', transform=train_transform, binary=binary)
-    dset_val = MoorfieldsDataset(split='val', transform=test_transform, binary=binary)
-    dset_test = MoorfieldsDataset(split='test', transform=test_transform, binary=binary)
+    dset_train = MoorfieldsDataset(split='train', transform=train_transform, binary_type=binary_type)
+    dset_val = MoorfieldsDataset(split='val', transform=test_transform, binary_type=binary_type)
+    dset_test = MoorfieldsDataset(split='test', transform=test_transform, binary_type=binary_type)
 
     return dset_train, dset_test, dset_val
