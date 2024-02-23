@@ -50,37 +50,10 @@ We greatly thanks the reviews of MIDL 2023 for improving this work.
 ## Citation
 If you use this code, please cite
 ```
-  our
-```
-
-```
-@article{huang2021identifying,
-  title={Identifying the key components in ResNet-50 for diabetic retinopathy grading from fundus images: a systematic investigation},
-  author={Huang, Yijin and Lin, Li and Cheng, Pujin and Lyu, Junyan and Tang, Xiaoying},
-  journal={arXiv preprint arXiv:2110.14160},
-  year={2021}
-}
-```
-
-If you use function inside code, please cite 
-Please also note that code segments from the related work were used to generate the class evidence map and the GradCAM. If use them, please also cite:
-
-Please also note that code segments from the related work (BagNet and GradCAM)were used to generate the evidence map. If use them, please also cite:
-
-```
-@article{brendel2018bagnets,
-  title={Approximating CNNs with Bag-of-local-Features models works surprisingly well on ImageNet},
-  author={Brendel, Wieland and Bethge, Matthias},
-  journal={International Conference on Learning Representations},
-  year={2019},
-  url={https://openreview.net/pdf?id=SkfMWhAqYQ},
-}
-
-@misc{jacobgilpytorchcam,
-  title={PyTorch library for CAM methods},
-  author={Jacob Gildenblat and contributors},
-  year={2021},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/jacobgil/pytorch-grad-cam}},
+ @inproceedings{donteu2023sparse,
+  title={Sparse Activations for Interpretable Disease Grading},
+  author={Donteu, Kerol R Djoumessi and Ilanchezian, Indu and K{\"u}hlewein, Laura and Faber, Hanna and Baumgartner, Christian F and Bah, Bubacarr and Berens, Philipp and Koch, Lisa M},
+  booktitle={Medical Imaging with Deep Learning},
+  year={2023}
 }
 ```

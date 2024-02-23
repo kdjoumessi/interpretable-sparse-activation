@@ -12,7 +12,7 @@ from .our_dataset import FundusDataset
 
 def generate_dataset(cfg):
     
-    if cfg.data_paths.mean == 'auto' or cfg.data_paths.std == 'auto':
+    if cfg.data.mean == 'auto' or cfg.data.std == 'auto':
         data_path = os.path.join(cfg.data_paths.root, cfg.data_paths.dset_dir)
             
         mean, std = auto_statistics(

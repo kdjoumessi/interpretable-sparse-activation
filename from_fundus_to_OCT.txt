@@ -1,0 +1,12 @@
+transformation file 
+- l 48-51
+- l 53-62
+
+path.yaml file
+
+config file
+batch size
+
+dataset
+l18: path to the csv
+l36: filename with s

@@ -119,7 +119,13 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
             epoch_loss += loss.item()
             avg_loss = epoch_loss / (step + 1)
             estimator.update(y_pred, y)
-            avg_acc, avg_bin_acc = estimator.get_accuracy(6)
+
+            if cfg.data.threshold:
+                avg_acc, avg_bin_acc = estimator.get_accuracy(6)
+                #print(avg_acc, avg_bin_acc)
+            else:
+                avg_acc = estimator.get_accuracy(6)
+            
             if not cfg.data.binary:
                 avg_kappa = estimator.get_kappa(6)
 
@@ -128,18 +134,18 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                 samples = torchvision.utils.make_grid(X)
                 samples = inverse_normalize(samples, cfg.data.mean, cfg.data.std)
                 logger.add_image('input samples', samples, 0, dataformats='CHW')
-
-            if cfg.data.binary:
-                list_auc, _, _ = estimator.get_auc_auprc(6)
+                
+            list_auc, _, _ = estimator.get_auc_auprc(6)
+            if cfg.data.binary:                
                 progress.set_description(
                     'epoch: [{} / {}], bash: {}/{}, loss: {:.6f}, acc: {:.4f}, auc: {:.4f}'.format(epoch, cfg.train.epochs, step, len(train_loader), avg_loss, avg_acc, list_auc[0]) )
             else:
                 progress.set_description(
-                    'epoch: [{} / {}], bash: {}/{}, loss: {:.6f}, acc: {:.4f}, kappa: {:.4f}, bin_acc: {:.4f}'
-                    .format(epoch, cfg.train.epochs, step, len(train_loader), avg_loss, avg_acc, avg_kappa, avg_bin_acc) )
-        
+                    'epoch: [{} / {}], bash: {}/{}, loss: {:.6f}, acc: {:.4f}, kappa: {:.4f}, bin_acc: {:.4f}, auc: {:.4f}'
+                    .format(epoch, cfg.train.epochs, step, len(train_loader), avg_loss, avg_acc, avg_kappa, avg_bin_acc, list_auc[0]))
+   
         # Binary metrics: after a complete epoch
-        if cfg.data.binary:
+        if cfg.data.binary or cfg.data.threshold:
             list_auc, list_auprc, list_others = estimator.get_auc_auprc(6)
             t_auc, train_fpr, train_tpr = list_auc
             t_auprc, train_prec_tab, train_sens_tab = list_auprc
@@ -153,15 +159,19 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
             df2 = pd.DataFrame({'epoch_loss': CE_loss, 'epoch_reg': l1_reg, 'epoch_l1_reg': reg})
             df2.to_csv(os.path.join(save_path, 'summarize_epoch.csv'), index=False)
 
+        defaut_train_cm = estimator.get_cm()
         # validation performance
         if epoch % cfg.train.eval_interval == 0:
             eval(cfg, model, val_loader, estimator, loss_function)
-            acc, bin_acc = estimator.get_accuracy(6)
+            if cfg.data.threshold:
+                acc, bin_acc = estimator.get_accuracy(6)
+            else: 
+                acc = estimator.get_accuracy(6)
             loss_ = estimator.get_val_loss(6)
             if not cfg.data.binary:
                 kappa = estimator.get_kappa(6)
-                #print('get kappaaaaaaaaaaaaaaaaaaaaaaaaaaaa', kappa)
-            else:
+            
+            if cfg.data.binary or cfg.data.threshold:
                 list_auc, list_auprc, list_others = estimator.get_auc_auprc(6)
                 v_auc, val_fpr, val_tpr = list_auc
                 v_auprc, val_prec_tab, val_sens_tab = list_auprc
@@ -176,45 +186,56 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                 # message = '{}: epoch {}/{} validation accuracy: {}, kappa: {}, bin acc.: {}'
                 #print(message.format(dtime, epoch, cfg.train.epochs, acc, kappa, bin_acc))
                 print('{}: epoch {}/{} validation accuracy: {}, kappa: {}'.format(dtime, epoch, cfg.train.epochs, acc, kappa))
-            
+             
             if logger:
                 logger.add_scalar('validation loss', loss_, epoch)
                 logger.add_scalar('validation accuracy', acc, epoch)
             
-                if cfg.data.binary:
+                if cfg.data.binary or cfg.data.threshold:
                     logger.add_scalar('validation AUC', v_auc, epoch)
                     logger.add_scalar('validation AUPRC', v_auprc, epoch)
                     logger.add_scalar('validation sensitivity', v_sens, epoch)
                     logger.add_scalar('validation specificity', v_spec, epoch)
                     logger.add_scalar('validation precision', v_prec, epoch)
 
-                    if cfg.data.num_classes != 2:
-                        logger.add_scalar('validation bin accuracy', bin_acc, epoch)
-                        val_bin_acc.append(bin_acc)                    
-
                     fig = matplotlib_roccurve([(train_fpr, train_tpr), (val_fpr, val_tpr)], 
                                             labels=['train', 'val'],
                                             points=points,
                                             point_labels=['WP BDA', 'WP NHS'])
-                    logger.add_figure('roc_curves', fig, epoch)
+                    logger.add_figure('validation roc_curves', fig, epoch)
 
                     prec_sens_fig = matplotlib_prec_recall_curve([(train_sens_tab, train_prec_tab), (val_sens_tab, val_prec_tab)], 
                                             labels=['train', 'val'])
-                    logger.add_figure('precision_recall_curves', prec_sens_fig, epoch)
-
-                    cm_fig_valid = plot_conf_matrix(v_cm)
-                    logger.add_figure('validation confusion matrix', cm_fig_valid.figure, epoch)
+                    logger.add_figure('validation precision_recall_curves', prec_sens_fig, epoch)
 
                     val_auc.append(v_auc); val_auprc.append(v_auprc); val_sens.append(v_sens)
                     val_spec.append(v_spec); val_prec.append(v_prec)
-                else:
+
+                if not cfg.data.binary:
                     logger.add_scalar('validation kappa', kappa, epoch)
-                    val_kappa.append(kappa);
+                    val_kappa.append(kappa)
+
+                if cfg.data.threshold:
+                        logger.add_scalar('validation bin accuracy', bin_acc, epoch)
+                        val_bin_acc.append(bin_acc)
+
+                        bin_cm_fig_valid = plot_conf_matrix(v_cm)
+                        logger.add_figure('validation bin confusion matrix', bin_cm_fig_valid.figure, epoch)
+
+                cm_fig_valid = plot_conf_matrix(estimator.get_cm(), cfg.data.num_classes)
+                logger.add_figure('validation confusion matrix', cm_fig_valid.figure, epoch)
 
             val_loss.append(loss_); val_acc.append(acc)             
 
             # save model
-            (indicator, bin_indicator) = (kappa, bin_kappa) if cfg.train.kappa_prior else (acc, bin_acc)
+            #(indicator, bin_indicator) = (kappa, bin_kappa) if cfg.train.kappa_prior else (acc, bin_acc)
+
+            if cfg.data.threshold:
+                indicator, bin_indicator = acc, bin_acc
+            else:
+                indicator = acc
+                bin_indicator = 0
+
             if indicator > max_indicator:
                 print('save the best model. \n Epoch: {}, acc. {} \n'.format(epoch, indicator))
                 #save_weights(model, os.path.join(cfg.base.save_path, 'best_validation_weights_epoch{}_acc_{}.pt'.format(epoch, indicator)))
@@ -222,12 +243,13 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                 max_indicator = indicator
                 #print_msg('Best in validation set. Model save at {}'.format(save_path))
 
-            if (bin_indicator > max_bin_indicator) and (not cfg.data.binary):
-                print('save the best model. Epoch: \n {}, bin. acc. {} \n'.format(epoch, bin_indicator))
-                #save_weights(model, os.path.join(cfg.base.save_path, 'best_validation_weights_epoch{}_acc_{}.pt'.format(epoch, indicator)))
-                save_weights(model, os.path.join(save_path, 'best_validation_weights_bin_acc.pt'))                
-                max_bin_indicator = bin_indicator
-                #print_msg('Best in validation set. Model save at {}'.format(save_path))
+            if cfg.data.threshold:
+                if (bin_indicator > max_bin_indicator):
+                    print('save the best model. Epoch: \n {}, bin. acc. {} \n'.format(epoch, bin_indicator))
+                    #save_weights(model, os.path.join(cfg.base.save_path, 'best_validation_weights_epoch{}_acc_{}.pt'.format(epoch, indicator)))
+                    save_weights(model, os.path.join(save_path, 'best_validation_weights_bin_acc.pt'))                
+                    max_bin_indicator = bin_indicator
+                    #print_msg('Best in validation set. Model save at {}'.format(save_path))
 
             if min_loss_indicator > loss_:
                 print('save the best model based on loss. \n Epoch: {}, loss. {} \n'.format(epoch, loss_))
@@ -255,14 +277,12 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
                     print('save the best model based on the best Precision. \n Epoch: {}, Precision. {} \n'.format(epoch, v_prec))
                     save_weights(model, os.path.join(save_path, 'best_validation_weights_prec.pt'))
                     max_pre = v_prec
-            else:      
-                #print('kapppppppppppppppppppppppppppp', kappa, kappa_indicator)        
+            else:         
                 if kappa > kappa_indicator:
                     print('save the best model based on Kappa. Epoch: {}, kappa. {}'.format(epoch, kappa))
                     save_weights(model, os.path.join(save_path, 'best_validation_weights_kappa.pt'))
                     kappa_indicator = kappa
                     print_msg('Best in validation set on the kappa. Model save at {}'.format(save_path))
-                    #print('save kapppppppppppppppppppppppppppp') 
 
         '''
         if epoch % cfg.train.save_interval == 0:
@@ -283,25 +303,29 @@ def train(cfg, model, train_dataset, val_dataset, estimator, logger=None):
             logger.add_scalar('training accuracy', avg_acc, epoch)
             logger.add_scalar('learning rate', curr_lr, epoch)
 
-            if cfg.data.binary:
+            if cfg.data.binary or cfg.data.threshold:
                 logger.add_scalar('training AUC', t_auc, epoch)
                 logger.add_scalar('training AUPRC', t_auprc, epoch)
                 logger.add_scalar('training sensitivity', t_sens, epoch)
                 logger.add_scalar('training specificity', t_spec, epoch)
-                logger.add_scalar('training precision', t_prec, epoch)
-
-                if cfg.data.num_classes != 2:                
-                    logger.add_scalar('training bin accuracy', avg_bin_acc, epoch)
-                    train_bin_acc.append(avg_bin_acc)
-
-                cm_fig_train = plot_conf_matrix(t_cm)
-                logger.add_figure('training confusion matrix', cm_fig_train.figure, epoch)
+                logger.add_scalar('training precision', t_prec, epoch)                
 
                 train_auc.append(t_auc); train_auprc.append(t_auprc) 
                 train_sens.append(t_sens); train_spec.append(t_spec); train_prec.append(t_prec)
-            else:
+
+            if not cfg.data.binary:
                 logger.add_scalar('training kappa', avg_kappa, epoch)
                 train_kappa.append(avg_kappa)
+
+            if cfg.data.threshold:
+                logger.add_scalar('training bin accuracy', avg_bin_acc, epoch)
+                train_bin_acc.append(avg_bin_acc)
+
+                bin_cm_fig_train = plot_conf_matrix(t_cm)
+                logger.add_figure('training bin confusion matrix', bin_cm_fig_train.figure, epoch)
+               
+            cm_fig_train = plot_conf_matrix(defaut_train_cm, cfg.data.num_classes)  
+            logger.add_figure('training confusion matrix', cm_fig_train.figure, epoch)      
 
             #logger.flush()
 
@@ -370,7 +394,7 @@ def evaluate(cfg, model, checkpoint, test_dataset, estimator, type_ds):
         auc = list_auc[0]
         auprc, sens, prec, spec = list_auprc[0], list_others[0], list_others[1], list_others[2]
 
-        print('Finished! {} acc {}'.format(type_ds, estimator.get_accuracy(6)[0]))
+        print('Finished! {} acc {}'.format(type_ds, estimator.get_accuracy(6)))
         print('loss:', estimator.get_val_loss())
         print('AUC: {}, sens: {}, spec: {}, prec: {}, AUPRC: {}'.format(auc, sens, spec, prec, auprc))
         print('Confusion Matrix:')

@@ -45,12 +45,12 @@ def data_transforms(cfg):
                 fill=aug_args.value_fill
             ),
             p=aug_args.translation.prob
-        ),
-        'grayscale': transforms.RandomGrayscale(
-            p=aug_args.grayscale.prob
-        )
+        )#,
+        #'grayscale': transforms.RandomGrayscale(
+        #    p=aug_args.grayscale.prob
+        #)
     }
-
+    '''
     if version.parse(torch.__version__) >= version.parse('1.7.1'):
         operations['gaussian_blur'] = random_apply(
             transforms.GaussianBlur(
@@ -59,6 +59,7 @@ def data_transforms(cfg):
             ),
             p=aug_args.gaussian_blur.prob
         )
+    '''
 
     augmentations = []
     for op in data_aug:

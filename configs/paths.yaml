@@ -1,13 +1,13 @@
 # contains the paths to the dataset
 
 kaggle_dset:
-  root: "/gpfs01/berens/data/data/DR/Kaggle_DR_resized"
-  img_dir: "kaggle_data_512"
-  train_csv: 'kaggle_gradable_train_new_qual_eval.csv'
-  val_csv: 'kaggle_gradable_val_new_qual_eval.csv'
-  test_csv: 'kaggle_gradable_test_new_qual_eval.csv'
-  mean: [0.41326871514320374, 0.2723627984523773, 0.18590997159481049] # 512
-  std: [0.29345420002937317, 0.20033970475196838, 0.15474912524223328] # 512
+  root: "/gpfs01/berens/data/data/kermani_oct/CellData" #"/gpfs01/berens/data/data/DR/Kaggle_DR_resized"
+  img_dir: "OCT_preprocessed_resized_3_channels_496" #"kaggle_data_512"
+  train_csv: 'train_normal_drusen.csv' #'filtered_train.csv' #'kaggle_gradable_train_new_qual_eval.csv'
+  val_csv: 'val_normal_drusen.csv' #'filtered_val.csv' #'kaggle_gradable_val_new_qual_eval.csv'
+  test_csv: 'test_normal_drusen.csv' #'filtered_test.csv' #'kaggle_gradable_test_new_qual_eval.csv'
+  mean: [0.19075624644756317, 0.19075624644756317, 0.19075624644756317] #[0.41326871514320374, 0.2723627984523773, 0.18590997159481049] # 512
+  std: [0.22165445983409882, 0.22165445983409882, 0.22165445983409882] #[0.29345420002937317, 0.20033970475196838, 0.15474912524223328] # 512
   
 eyepacs_dset:
   root: "/gpfs01/berens/data/data/eyepacs/data_processed"
@@ -15,6 +15,6 @@ eyepacs_dset:
   train_csv: 'eyepacs_gradable_train.csv'
   val_csv: 'eyepacs_gradable_val.csv'
   test_csv: 'eyepacs_gradable_test.csv'
-  mean: [0.38226059079170227, 0.23071028292179108, 0.13958849012851715] #auto 512
-  std: [0.27605894207954407, 0.18289417028427124, 0.1454564929008484] #auto 512
+  mean: [0.37127840518951416, 0.22876101732254028, 0.1397477686405182] #auto 512
+  std:  [0.27681708335876465, 0.1864495426416397, 0.14726686477661133] #auto 512
   

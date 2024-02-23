@@ -271,10 +271,11 @@ def matplotlib_prec_recall_curve(precison_recall_tuples, labels):
 
     return fig
 
-def plot_conf_matrix(cm):
+def plot_conf_matrix(cm, num_class=2):
     """  combine the confusion matrix with the approproate labels to make it easier to visualize """
 
-    column, indices = [0,1], [0,1]
+    column = [i for i in range(num_class)]
+    indices = [i for i in range(num_class)]
     table  = pd.DataFrame(cm, columns=column, index=indices)
     #return table
     return sns.heatmap(table, annot=True, fmt='d', cmap='viridis')

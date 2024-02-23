@@ -15,13 +15,13 @@ dset:
   select_side: 'left' # in ['left', 'right', None]
 
 data:
-  num_classes: 2 # number of classes, default 100 [2, 5]
+  num_classes: 2 # number of classes, default 100 [2, 5] 4
   binary: True # [True, False] True => n_classe = 2, False => n_classe = 5
-  onset: onset2 # onset1 or onset2
-  threshold: null # 1 for onset1 and 2 for unset2. to derive the binary metrics: used in the metrics file
-  input_size: 512
-  mean: None
-  std: None
+  onset: "drusen_vs_healthy" # onset1 or onset2, drusen_vs_healthy, level
+  threshold: null # [1, 2, null] 1 for onset1 and 2 for unset2. to derive the binary metrics: used in the metrics file
+  input_size: 496 #512
+  mean: None  # auto
+  std: None   # auto
   sampling_strategy: instance_balanced # instance_balanced / class_balanced / progressively_balanced. ref: https://arxiv.org/abs/1910.09217
   sampling_weights_decay_rate: 0.9 # if sampling_strategy is progressively_balanced, sampling weight will change from class_balanced to instance_balanced
   augmentation: 'baseline' #['baseline', 'other']
@@ -34,7 +34,7 @@ data:
     - translation
 
 train:
-  network: resnet50 # [bagnet33, resnet50 (=> v1)] available networks are list in networks.yaml 
+  network: bagnet33 # [bagnet33, resnet50 (=> v1)] available networks are list in networks.yaml 
   version: v2  # v1 = bagnet without reg, v2 = with reg
   sparsity: False  # [True, False]
   batch_reg_record: True   # just to monitor the regularization after every epoch
@@ -42,7 +42,7 @@ train:
   checkpoint: null # load weights from other pretrained model
   epochs: 100
   batch_size: 16
-  num_workers: 24 # 0, 2, 4 good = 2 number of cpus used to load data at each step
+  num_workers: 24 # 24, 0, 2, 4 good = 2 number of cpus used to load data at each step
   criterion: cross_entropy # [cross_entropy, mean_square_error ] available criterions are list in 'criterion_args' below
   loss_weight: null # null / balance / dynamic / list with shape num_classes. Weights for loss function. Don't use it with weighted sampling!
   loss_weight_decay_rate: 0 # if loss_weights is dynamic, loss weight will decay from balance to equivalent weights
@@ -55,7 +55,8 @@ train:
   pin_memory: true # enables fast data transfer to CUDA-enabled GPUs
   #lambda_l1: 0.00002 # [v2_bad 0.00008, 0.00012, 0.00018, 0.0006, 0.00002] [v1 fair 0.0001, 0.00008]
   #lambda_l1: 0.000007 # multi [v2 0.00002, 0.000013, 0.000006, 0.000004] [v1 fair 0.00008, 0.00007, 0.00005] good=0.000007
-  lambda_l1: 0.000004 # [0.00001, 0.00002, 0.000009] Onset2
+  #lambda_l1: 0.000004 # [0.00001, 0.00002, 0.000009] Onset2
+  lambda_l1: 0.00009 # Eyepacs_02 [0.00001, (2-9)e-05]
   
 solver:
   optimizer: SGD # SGD / ADAM
