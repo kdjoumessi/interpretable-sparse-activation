@@ -31,6 +31,7 @@ The folder containing the log file and the final weights of the model can be dee
 ```$ tensorborad --logdir=/path/to/your/log --port=6006```
 
 ### Reproducibility
+- Code for figures 2, 3, 4, 6, and 7 may be available upon request.
 - Annotation masks may be available upon request
 
 ### Best models's weights
