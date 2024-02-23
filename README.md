@@ -31,7 +31,6 @@ The folder containing the log file and the final weights of the model can be dee
 ```$ tensorborad --logdir=/path/to/your/log --port=6006```
 
 ### Reproducibility
-- `Evaluations.ipynb` contains the codes for figures 2, 3, 4, 6, and 7
 - Annotation masks may be available upon request
 
 ### Best models's weights
@@ -54,37 +53,5 @@ If you use this code, please cite
   author={Donteu, Kerol R Djoumessi and Ilanchezian, Indu and K{\"u}hlewein, Laura and Faber, Hanna and Baumgartner, Christian F and Bah, Bubacarr and Berens, Philipp and Koch, Lisa M},
   booktitle={Medical Imaging with Deep Learning},
   year={2023}
-}
-```
-
-```
-@article{huang2021identifying,
-  title={Identifying the key components in ResNet-50 for diabetic retinopathy grading from fundus images: a systematic investigation},
-  author={Huang, Yijin and Lin, Li and Cheng, Pujin and Lyu, Junyan and Tang, Xiaoying},
-  journal={arXiv preprint arXiv:2110.14160},
-  year={2021}
-}
-```
-
-Some code segments from related work have been used to generate the visualization (heatmap/saliency map). If you use a function within the code (`./utils/posthoc`) to generate the sparse/dense heatmap and Resnet saliency map, please also consider citing:
-
-for sparse/dense heatmap visualization
-
-```
-@article{brendel2018bagnets,
-  title={Approximating CNNs with Bag-of-local-Features models works surprisingly well on ImageNet},
-  author={Brendel, Wieland and Bethge, Matthias},
-  journal={International Conference on Learning Representations},
-  year={2019},
-  url={https://openreview.net/pdf?id=SkfMWhAqYQ},
-}
-
-for Resnet saliency map
-@misc{jacobgilpytorchcam,
-  title={PyTorch library for CAM methods},
-  author={Jacob Gildenblat and contributors},
-  year={2021},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/jacobgil/pytorch-grad-cam}},
 }
 ```
