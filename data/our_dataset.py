@@ -14,8 +14,7 @@ class FundusDataset(Dataset):
         self.transform = transform
         
         self.image_path = os.path.join(cfg.data_paths.root, cfg.data_paths.dset_dir)
-        #csv_path = cfg.data_paths.root
-        csv_path = os.path.join(cfg.data_paths.root, cfg.data_paths.dset_dir)   
+        csv_path = cfg.data_paths.root  
 
         if cfg.data.binary:
             self.n_classes = 2
@@ -31,9 +30,7 @@ class FundusDataset(Dataset):
                 self.df = pd.read_csv(os.path.join(csv_path, cfg.data_paths.val_csv))
         else:
             self.df = pd.read_csv(os.path.join(csv_path, cfg.data_paths.test_csv))
-        #print(self.df.head(3))
-        #self.filenames = self.df['filename'] ### 
-        self.filenames = self.df['filenames']
+        self.filenames = self.df['filename'] 
         self.labels = self.df[self.str_label]
         self.classes = sorted(list(set(self.targets)))
         
