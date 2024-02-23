@@ -55,3 +55,12 @@ If you use this code, please cite
   year={2023}
 }
 ```
+
+```
+@article{huang2021identifying,
+  title={Identifying the key components in ResNet-50 for diabetic retinopathy grading from fundus images: a systematic investigation},
+  author={Huang, Yijin and Lin, Li and Cheng, Pujin and Lyu, Junyan and Tang, Xiaoying},
+  journal={arXiv preprint arXiv:2110.14160},
+  year={2021}
+}
+```
