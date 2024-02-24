@@ -44,24 +44,16 @@ The final models with the best validation weights used for all the experiments (
 - [Multiclass resnet model](https://drive.google.com/file/d/1_okXGC90rGAYSL2OXYdKUmq2ETX2TmA4/view?usp=share_link)
 
 ## Acknowledge
-We greatly thanks the reviews of MIDL 2023 for improving this work.
+-  This repository contains modified source code from yijinhuang/pytorch-classification by Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Roger Tam, and Xiaoying Tang 
+- We greatly thanks the reviews of MIDL 2023 for improving this work.
 
 ## Citation
-If you use this code, please cite
+Donteu Kerol R. Djoumessi., Indu Ilanchezian, Laura Kuhlewein, Hanna Faber., Christian Baumgartner, Bubacarr Bah, Philipp Berens, Lisa Koch. Sparse activations for interpretable disease grading. In Medical Imaging with Deep Learning, Nashville, United States, July 2023.
 ```
   @inproceedings{donteu2023sparse,
   title={Sparse Activations for Interpretable Disease Grading},
   author={Donteu, Kerol R Djoumessi and Ilanchezian, Indu and K{\"u}hlewein, Laura and Faber, Hanna and Baumgartner, Christian F and Bah, Bubacarr and Berens, Philipp and Koch, Lisa M},
   booktitle={Medical Imaging with Deep Learning},
   year={2023}
-}
-```
-
-```
-@article{huang2021identifying,
-  title={Identifying the key components in ResNet-50 for diabetic retinopathy grading from fundus images: a systematic investigation},
-  author={Huang, Yijin and Lin, Li and Cheng, Pujin and Lyu, Junyan and Tang, Xiaoying},
-  journal={arXiv preprint arXiv:2110.14160},
-  year={2021}
 }
 ```
