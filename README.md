@@ -44,7 +44,7 @@ The final models with the best validation weights used for all the experiments (
 - [Multiclass resnet model](https://drive.google.com/file/d/1_okXGC90rGAYSL2OXYdKUmq2ETX2TmA4/view?usp=share_link)
 
 ## Acknowledge
--  This repository contains modified source code from yijinhuang/pytorch-classification by Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Roger Tam, and Xiaoying Tang 
+-  This repository contains modified source code from [yijinhuang/pytorch-classification](https://github.com/YijinHuang/pytorch-classification) by Yijin Huang, Li Lin, Pujin Cheng, Junyan Lyu, Roger Tam, and Xiaoying Tang 
 - We greatly thanks the reviews of MIDL 2023 for improving this work.
 
 ## Citation
